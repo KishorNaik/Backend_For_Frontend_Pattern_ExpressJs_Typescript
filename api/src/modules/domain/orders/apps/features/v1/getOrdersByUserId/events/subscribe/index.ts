@@ -1,5 +1,4 @@
 import { logConstruct, logger } from '@/shared/utils/helpers/loggers';
-import { mediator } from '@/shared/utils/helpers/medaitR';
 import {
 	bullMqRedisConnection,
 	JsonString,
@@ -8,17 +7,17 @@ import {
 	StatusCodes,
 	WorkerBullMq,
 } from '@kishornaik/utils';
-import { GetUserByIdRequestDto } from '../../contracts';
-import { GetUserByIdQuery } from '../../query';
+import { GetOrdersByUserIdRequestDto } from '../../contracts';
+import { GetOrdersByUserIdQuery } from '../../query';
+import { mediator } from '@/shared/utils/helpers/medaitR';
 
-const requestQueue = 'get_user_by_id_queue';
+const requestQueue = 'get_orders_by_user_id_queue';
 const consumer = new RequestReplyConsumerBullMq(bullMqRedisConnection);
 
-export const getUserByIdIntegrationEvent: WorkerBullMq = async () => {
+export const getOrdersByUserIdIntegrationEvent: WorkerBullMq = async () => {
 	const worker = await consumer.startConsumingAsync<string, JsonString>(
 		requestQueue,
 		async (reply) => {
-			// Get Id
 			const id: string = reply.data.data;
 			if (!id) {
 				return {
@@ -33,11 +32,11 @@ export const getUserByIdIntegrationEvent: WorkerBullMq = async () => {
 			}
 
 			// Dto Map
-			const dto: GetUserByIdRequestDto = new GetUserByIdRequestDto();
-			dto.id = id;
+			const dto: GetOrdersByUserIdRequestDto = new GetOrdersByUserIdRequestDto();
+			dto.userId = id;
 
 			// Query
-			const query: GetUserByIdQuery = new GetUserByIdQuery(dto);
+			const query: GetOrdersByUserIdQuery = new GetOrdersByUserIdQuery(dto);
 			const response = await mediator.send(query);
 
 			if (!response.Success) {
@@ -74,7 +73,7 @@ export const getUserByIdIntegrationEvent: WorkerBullMq = async () => {
 		const jobData = job.data;
 		logger.info(
 			logConstruct(
-				`getUserByIdIntegrationEvent`,
+				`getOrderByIdIntegrationEvent`,
 				`completed`,
 				`${requestQueue} Integration Event Completed`,
 				jobData.traceId
@@ -86,7 +85,7 @@ export const getUserByIdIntegrationEvent: WorkerBullMq = async () => {
 		const jobData = job.data;
 		logger.info(
 			logConstruct(
-				`getUserByIdIntegrationEvent`,
+				`getOrderByIdIntegrationEvent`,
 				`failed`,
 				`${requestQueue} Integration Event Failed`,
 				jobData.traceId

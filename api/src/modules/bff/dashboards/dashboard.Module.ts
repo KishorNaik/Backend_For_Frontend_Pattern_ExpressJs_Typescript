@@ -1,5 +1,3 @@
-const dashboardModules:Function[]=[];
+const dashboardModules: Function[] = [];
 
-export {
-  dashboardModules
-};
+export { dashboardModules };

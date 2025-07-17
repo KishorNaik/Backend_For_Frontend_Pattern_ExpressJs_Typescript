@@ -1,5 +1,7 @@
-const orderModules:Function[]=[];
+import { WorkerBullMq } from '@kishornaik/utils';
+import { getOrdersByUserIdIntegrationEvent } from './apps/features/v1/getOrdersByUserId';
 
-export {
-  orderModules
-};
+const orderModules: Function[] = [];
+const orderBullMqWorkerModules: WorkerBullMq[] = [getOrdersByUserIdIntegrationEvent];
+
+export { orderModules, orderBullMqWorkerModules };

@@ -146,7 +146,7 @@ npm run dev:bullmq
         - Query Services
             https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/tree/main/api/src/modules/domain/users/apps/features/v1/getUserById/query/services
 
-        - Integration Event (Subscribe) [bullmq] 
+        - Integration Event (Subscribe) [bullmq - Request/Reply Pattern]  
             https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/blob/main/api/src/modules/domain/users/apps/features/v1/getUserById/events/subscribe/index.ts
         
         - User.Module.ts
@@ -162,7 +162,7 @@ npm run dev:bullmq
         - Query Services
             https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/tree/main/api/src/modules/domain/orders/apps/features/v1/getOrdersByUserId/query/services
         
-        - Integration Event (Subscribe) [bullmq] 
+        - Integration Event (Subscribe) [bullmq - Request/Reply Pattern] 
             https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/blob/main/api/src/modules/domain/orders/apps/features/v1/getOrdersByUserId/events/subscribe/index.ts
 
         - Order.Module.ts
@@ -199,6 +199,6 @@ npm run dev:bullmq
 
 - app.Module.ts
     https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/blob/main/api/src/modules/app.Module.ts
-    
+
 - Server.ts
     https://github.com/KishorNaik/Backend_For_Frontend_Pattern_ExpressJs_Typescript/blob/main/api/src/server.ts

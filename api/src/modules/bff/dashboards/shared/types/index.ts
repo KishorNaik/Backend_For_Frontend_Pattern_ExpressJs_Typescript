@@ -26,3 +26,9 @@ export interface IDashboardMetaType{
   totalOrders:number;
   activeStatus:number;
 }
+
+
+export interface IUserOrdersType{
+  user:IUserProfileType;
+  orders:Array<IOrdersType>
+}

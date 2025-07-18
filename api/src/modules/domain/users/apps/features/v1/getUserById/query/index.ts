@@ -87,7 +87,7 @@ export class GetUserByIdQueryHandler
 				// Get Db Result
 				const userEntity = this.pipeline.getResult<UserEntity>(PipelineSteps.DbService);
 
-				return this._getUserByIdMapResponseService.handleAsync(userEntity);
+				return await this._getUserByIdMapResponseService.handleAsync(userEntity);
 			});
 
 			// Return

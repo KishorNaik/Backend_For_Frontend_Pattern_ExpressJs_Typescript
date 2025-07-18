@@ -25,13 +25,13 @@ import {
 } from '@kishornaik/utils';
 import { mediator } from '@/shared/utils/helpers/medaitR';
 import { logger } from '@/shared/utils/helpers/loggers';
-import { DashboardDataFetchRequestDto, Web } from '../../contracts';
-import { DashboardDataFetchMapForWebService } from './services/map';
+import { DashboardDataFetchRequestDto, Mobile } from '../../contracts';
+import { DashboardDataFetchMapForMobileService } from './services/map';
 
 // #Region Endpoint
-@JsonController(`/api/web/v1/dashboard`)
-@OpenAPI({ tags: [`web-dashboard`] })
-export class DashboardDataFetchForWebEndpoint {
+@JsonController(`/api/mobile/v1/dashboard`)
+@OpenAPI({ tags: [`mobile-dashboard`] })
+export class DashboardDataFetchForMobileEndpoint {
 	@Get(`/:userId`)
 	@OpenAPI({
 		summary: `Fetch Dashboard data for Web platform`,
@@ -42,7 +42,7 @@ export class DashboardDataFetchForWebEndpoint {
 		const request: DashboardDataFetchRequestDto = new DashboardDataFetchRequestDto();
 		request.userId = userId;
 
-		const response = await mediator.send(new DashboardDataFetchForWebQuery(request));
+		const response = await mediator.send(new DashboardDataFetchForMobileQuery(request));
 		return res.status(response.StatusCode).json(response);
 	}
 }
@@ -51,8 +51,8 @@ export class DashboardDataFetchForWebEndpoint {
 
 // #region Query
 @sealed
-class DashboardDataFetchForWebQuery extends RequestData<
-	ApiDataResponse<Web.DashboardDataFetchResponseData>
+class DashboardDataFetchForMobileQuery extends RequestData<
+	ApiDataResponse<Mobile.DashboardDataFetchResponseData>
 > {
 	private readonly _request: DashboardDataFetchRequestDto;
 
@@ -70,26 +70,26 @@ class DashboardDataFetchForWebQuery extends RequestData<
 
 // #region Query Handler
 @sealed
-@requestHandler(DashboardDataFetchForWebQuery)
-class DashboardDataFetchForWebQueryHandler
+@requestHandler(DashboardDataFetchForMobileQuery)
+class DashboardDataFetchForMobileQueryHandler
 	implements
 		RequestHandler<
-			DashboardDataFetchForWebQuery,
-			ApiDataResponse<Web.DashboardDataFetchResponseData>
+			DashboardDataFetchForMobileQuery,
+			ApiDataResponse<Mobile.DashboardDataFetchResponseData>
 		>
 {
 	private pipeline = new PipelineWorkflow(logger);
-	private readonly _dashboardDataFetchMapForWebService: DashboardDataFetchMapForWebService;
+	private readonly _dashboardDataFetchMapForMobileService: DashboardDataFetchMapForMobileService;
 
 	public constructor() {
-		this._dashboardDataFetchMapForWebService = Container.get(
-			DashboardDataFetchMapForWebService
+		this._dashboardDataFetchMapForMobileService = Container.get(
+			DashboardDataFetchMapForMobileService
 		);
 	}
 
 	public async handle(
-		value: DashboardDataFetchForWebQuery
-	): Promise<ApiDataResponse<Web.DashboardDataFetchResponseData>> {
+		value: DashboardDataFetchForMobileQuery
+	): Promise<ApiDataResponse<Mobile.DashboardDataFetchResponseData>> {
 		try {
 			// Guard
 			if (!value)
@@ -102,12 +102,12 @@ class DashboardDataFetchForWebQueryHandler
 
 			// Map Service
 			await this.pipeline.step(`map-service`, async () => {
-				return this._dashboardDataFetchMapForWebService.handleAsync(request);
+				return this._dashboardDataFetchMapForMobileService.handleAsync(request);
 			});
 
 			//Response
 			const response =
-				this.pipeline.getResult<Web.DashboardDataFetchResponseData>(`map-service`);
+				this.pipeline.getResult<Mobile.DashboardDataFetchResponseData>(`map-service`);
 
 			return DataResponseFactory.success(StatusCodes.OK, response);
 		} catch (ex) {

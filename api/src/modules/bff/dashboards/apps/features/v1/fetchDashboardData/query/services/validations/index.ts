@@ -1,10 +1,10 @@
-import { DtoValidation, sealed, Service } from "@kishornaik/utils";
-import { DashboardDataFetchRequestDto } from "../../../contracts";
+import { DtoValidation, sealed, Service } from '@kishornaik/utils';
+import { DashboardDataFetchRequestDto } from '../../../contracts';
 
 @sealed
 @Service()
-export class FetchDashboardDataRequestValidationService extends DtoValidation<DashboardDataFetchRequestDto>{
-  public constructor(){
-    super();
-  }
+export class FetchDashboardDataRequestValidationService extends DtoValidation<DashboardDataFetchRequestDto> {
+	public constructor() {
+		super();
+	}
 }

@@ -9,10 +9,10 @@ import {
 	PipelineWorkflowException,
 	PipelineWorkflow,
 	Container,
-  Result,
-  ResultError,
-  ResultFactory,
-  tryCatchResultAsync
+	Result,
+	ResultError,
+	ResultFactory,
+	tryCatchResultAsync,
 } from '@kishornaik/utils';
 import { getTraceId, logger } from '@/shared/utils/helpers/loggers';
 import { mediator } from '@/shared/utils/helpers/medaitR';
@@ -23,9 +23,8 @@ import { FetchUserOrderService } from './services/fetch';
 
 // #region Query
 @sealed
-export class FetchDashboardDataQuery extends RequestData<DataResponse<IUserOrdersType>>{
-
-private readonly _request: DashboardDataFetchRequestDto;
+export class FetchDashboardDataQuery extends RequestData<DataResponse<IUserOrdersType>> {
+	private readonly _request: DashboardDataFetchRequestDto;
 	public constructor(request: DashboardDataFetchRequestDto) {
 		super();
 		this._request = request;
@@ -38,65 +37,71 @@ private readonly _request: DashboardDataFetchRequestDto;
 
 // #region Pipeline Steps
 enum PipelineSteps {
-  ValidationService = 'ValidationService',
-  FetchUserOrderService = 'FetchUserOrderService',
-  MapResponse = 'MapResponse',
+	ValidationService = 'ValidationService',
+	FetchUserOrderService = 'FetchUserOrderService',
+	MapResponse = 'MapResponse',
 }
 // #endregion
 
 // #region Query Handler
 @sealed
 @requestHandler(FetchDashboardDataQuery)
-export class FetchDashboardDataQueryHandler implements RequestHandler<FetchDashboardDataQuery, DataResponse<IUserOrdersType>>{
+export class FetchDashboardDataQueryHandler
+	implements RequestHandler<FetchDashboardDataQuery, DataResponse<IUserOrdersType>>
+{
+	private pipeline = new PipelineWorkflow(logger);
+	private readonly _fetchDashboardDataRequestValidationService: FetchDashboardDataRequestValidationService;
+	private readonly _fetchUserOrderService: FetchUserOrderService;
 
-  private pipeline=new PipelineWorkflow(logger);
-  private readonly _fetchDashboardDataRequestValidationService:FetchDashboardDataRequestValidationService;
-  private readonly _fetchUserOrderService:FetchUserOrderService;
+	public constructor() {
+		this._fetchDashboardDataRequestValidationService = Container.get(
+			FetchDashboardDataRequestValidationService
+		);
+		this._fetchUserOrderService = Container.get(FetchUserOrderService);
+	}
 
-  public constructor(){
-    this._fetchDashboardDataRequestValidationService=Container.get(FetchDashboardDataRequestValidationService);
-    this._fetchUserOrderService=Container.get(FetchUserOrderService);
-  }
+	public async handle(value: FetchDashboardDataQuery): Promise<DataResponse<IUserOrdersType>> {
+		try {
+			// Guard
+			if (!value)
+				return DataResponseFactory.error(StatusCodes.BAD_REQUEST, `Query is required`);
 
-  public async handle(value: FetchDashboardDataQuery): Promise<DataResponse<IUserOrdersType>> {
-    try
-    {
-      // Guard
-      if(!value)
-        return DataResponseFactory.error(StatusCodes.BAD_REQUEST,`Query is required`);
+			if (!value.request)
+				return DataResponseFactory.error(StatusCodes.BAD_REQUEST, `request is required`);
 
-      if(!value.request)
-        return DataResponseFactory.error(StatusCodes.BAD_REQUEST,`request is required`);
+			const { request } = value;
 
-      const {request}=value;
+			// Validation Service
+			await this.pipeline.step(PipelineSteps.ValidationService, async () => {
+				return await this._fetchDashboardDataRequestValidationService.handleAsync({
+					dto: request,
+					dtoClass: DashboardDataFetchRequestDto,
+				});
+			});
 
-      // Validation Service
-      await this.pipeline.step(PipelineSteps.ValidationService,async ()=>{
-        return await this._fetchDashboardDataRequestValidationService.handleAsync({
-          dto:request,
-          dtoClass:DashboardDataFetchRequestDto
-        })
-      });
+			// Fetch User Order Service
+			await this.pipeline.step(PipelineSteps.FetchUserOrderService, async () => {
+				return await this._fetchUserOrderService.handleAsync({
+					traceId: getTraceId() as string,
+					userId: request.userId,
+				});
+			});
 
-      // Fetch User Order Service
-      await this.pipeline.step(PipelineSteps.FetchUserOrderService,async()=>{
-        return await this._fetchUserOrderService.handleAsync({
-          traceId:getTraceId() as string,
-          userId:request.userId
-        });
-      });
+			// Get User and OrderResults
+			const userOrderResult: IUserOrdersType = this.pipeline.getResult<IUserOrdersType>(
+				PipelineSteps.FetchUserOrderService
+			);
+			if (!userOrderResult)
+				return DataResponseFactory.error(
+					StatusCodes.NOT_FOUND,
+					`User or Order data not found`
+				);
 
-      // Get User and OrderResults
-      const userOrderResult:IUserOrdersType=this.pipeline.getResult<IUserOrdersType>(PipelineSteps.FetchUserOrderService);
-      if(!userOrderResult)
-        return DataResponseFactory.error(StatusCodes.NOT_FOUND,`User or Order data not found`);
-
-      //Return
-      return DataResponseFactory.success(StatusCodes.OK, userOrderResult)
-    }
-    catch(ex){
-      return await DataResponseFactory.pipelineError(ex);
-    }
-  }
+			//Return
+			return DataResponseFactory.success(StatusCodes.OK, userOrderResult);
+		} catch (ex) {
+			return await DataResponseFactory.pipelineError(ex);
+		}
+	}
 }
 // #endregion

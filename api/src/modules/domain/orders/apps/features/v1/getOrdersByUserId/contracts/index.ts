@@ -7,7 +7,6 @@ export class GetOrdersByUserIdRequestDto {
 	@IsNotEmpty()
 	@IsString()
 	@IsSafeString({ message: 'Name must not contain HTML or JavaScript code' })
-	@IsUUID()
 	@Type(() => String)
 	userId: string;
 }

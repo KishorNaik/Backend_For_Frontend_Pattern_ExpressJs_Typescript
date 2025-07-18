@@ -1,5 +1,6 @@
 import { Processor, Queue, Worker, ConnectionOptions, QueueEvents, Job } from 'bullmq';
 import { SendReceiverMessageBullMq } from '../../../../types';
+import { randomUUID } from 'node:crypto';
 
 export class SenderReceiverProducerBullMq {
 	private readonly _connection: ConnectionOptions;
@@ -28,6 +29,7 @@ export class SenderReceiverProducerBullMq {
 		if (!this._connection) throw new Error('Connection must be provided');
 
 		await this._queues.add(jobName, data, {
+			jobId: randomUUID().toString(),
 			removeOnComplete: true,
 			removeOnFail: true,
 			attempts: 3,

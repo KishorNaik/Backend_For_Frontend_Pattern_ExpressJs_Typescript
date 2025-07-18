@@ -88,6 +88,13 @@ export class FetchUserOrderService implements IFetchUserOrderService {
 
 			// Parse & Bind Result
 			if (!userMessageResult.success || !orderMessageResult.success) {
+				if (
+					userMessageResult.statusCode === StatusCodes.NOT_FOUND ||
+					orderMessageResult.statusCode === StatusCodes.NOT_FOUND
+				) {
+					return ResultFactory.error(userMessageResult.statusCode, `No record found`);
+				}
+
 				return ResultFactory.error(
 					StatusCodes.INTERNAL_SERVER_ERROR,
 					`Error in fetching user or orders`

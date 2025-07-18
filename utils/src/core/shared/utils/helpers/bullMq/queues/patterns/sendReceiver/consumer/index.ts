@@ -21,6 +21,7 @@ export class SenderReceiverConsumerBullMq {
 				const worker = new Worker(queueName, job, {
 					connection: this._connection,
 					removeOnFail: { count: 0 },
+					lockDuration: 20 * 60 * 1000,
 				});
 				return resolve(worker);
 			} catch (ex) {

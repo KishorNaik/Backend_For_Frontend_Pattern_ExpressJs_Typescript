@@ -4,6 +4,7 @@ import {
 	RequestReplyMessageBullMq,
 	SendReceiverMessageBullMq,
 } from '../../../../types';
+import { randomUUID } from 'node:crypto';
 
 export class RequestReplyProducerBullMq {
 	private readonly _connection: ConnectionOptions;
@@ -52,6 +53,7 @@ export class RequestReplyProducerBullMq {
 		if (!this._queueEvents) throw new Error('Queue events must be provided');
 
 		const job = await this._queues.add(jobName, data, {
+			jobId: randomUUID().toString(),
 			removeOnComplete: true,
 			removeOnFail: true,
 			attempts: 3,

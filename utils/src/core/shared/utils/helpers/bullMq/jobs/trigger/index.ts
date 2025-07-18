@@ -17,7 +17,7 @@ export class TriggerJobBullMq {
 			connection: this._connection,
 			defaultJobOptions: {
 				removeOnComplete: true,
-				removeOnFail: false,
+				removeOnFail: true,
 				attempts: 3,
 				backoff: {
 					type: 'exponential',

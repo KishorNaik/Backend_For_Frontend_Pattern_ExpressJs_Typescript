@@ -9,6 +9,10 @@ import {
 	PipelineWorkflowException,
 	PipelineWorkflow,
 	Container,
+  Result,
+  ResultError,
+  ResultFactory,
+  tryCatchResultAsync
 } from '@kishornaik/utils';
 import { getTraceId, logger } from '@/shared/utils/helpers/loggers';
 import { mediator } from '@/shared/utils/helpers/medaitR';
@@ -82,18 +86,17 @@ export class FetchDashboardDataQueryHandler implements RequestHandler<FetchDashb
         });
       });
 
-      // Get User and Order Results
+      // Get User and OrderResults
       const userOrderResult:IUserOrdersType=this.pipeline.getResult<IUserOrdersType>(PipelineSteps.FetchUserOrderService);
       if(!userOrderResult)
         return DataResponseFactory.error(StatusCodes.NOT_FOUND,`User or Order data not found`);
 
       //Return
-      return DataResponseFactory.success(StatusCodes.OK,userOrderResult);
+      return DataResponseFactory.success(StatusCodes.OK, userOrderResult)
     }
     catch(ex){
       return await DataResponseFactory.pipelineError(ex);
     }
   }
-
 }
 // #endregion

@@ -14,7 +14,7 @@ export class DashboardDataFetchRequestDto {
 }
 // #endregion
 
-export namespace Mobile{
+export namespace Web{
 
   export class DashboardDataFetchResponseData{
     public profile:IUserProfileType;
@@ -24,7 +24,7 @@ export namespace Mobile{
 
 }
 
-export namespace Web{
+export namespace Mobile{
   export class DashboardDataFetchResponseData{
     public profile:IUserProfileTypeForMobile;
     public recentOrders:Array<IOrdersTypeForMobile>;
